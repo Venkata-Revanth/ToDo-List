@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+		<style>
+			@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
+			body {
+				min-height: 100vh;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				background-color: #f1f1f1;
+				flex-direction: column;
+				font-family: "Roboto", sans-serif;
+			}
+
+			form.add-form {
+				display: flex;
+				align-items: stretch;
+				width: 400px;
+			}
+
+			.todo-input {
+				padding: 5px 10px;
+				font-family: inherit;
+				font-size: 1.2rem;
+				flex: 1;
+			}
+			.add-button {
+				display: inline-block;
+				margin-left: 20px;
+				padding: 5px 20px;
+				background-color: #28a745 !important;
+				border: none;
+				border-radius: 5px;
+				color: #fff;
+				cursor: pointer;
+			}
+
+			.todos {
+				width: 400px;
+				margin: 20px 0;
+			}
+
+			.todos .todo {
+				display: flex;
+				align-items: stretch;
+				justify-content: space-between;
+				padding: 0;
+				height: 40px;
+				background-color: #fff;
+				border-radius: 5px;
+				overflow: hidden;
+				margin-bottom: 10px;
+			}
+			.todos .todo .data {
+				border: none;
+				flex: 1;
+			}
+			.todos .todo a {
+				color: #fff;
+				text-decoration: none;
+			}
+
+			.todos .todo .edit {
+				color: #fff;
+				border: none;
+				cursor: pointer;
+				background-color: #007bff !important;
+			}
+
+			.todos .todo a.delete {
+				background-color: #dc3545 !important;
+			}
+
+			.todos .todo * {
+				display: flex;
+				align-items: center;
+				padding: 0 20px;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>To Do App</h1>
+		<form class="add-form" action="" method="post">
+			{% csrf_token %}
+			<input
+				class="todo-input"
+				type="text"
+				name="text"
+				placeholder="Enter text..."
+				required
+			/><button class="add-button" type="submit">Add</button>
+		</form>
+
+		<div class="todos">
+			{% for Todo in Todos reversed %}
+			<form action="/edit/" method="POST">
+				<div class="todo">
+					{% csrf_token %}
+					<input type="hidden" name="id" value="{{ Todo.id }}" />
+					<input
+						data-id="{{ Todo.id }}"
+						class="data"
+						type="text"
+						name="text"
+						value="{{ Todo.text }}"
+						disabled
+					/>
+					<button
+						data-id="{{ Todo.id }}"
+						onclick="editTodo(event)"
+						class="edit"
+						href="delete/{{ Todo.id }}"
+					>
+						Edit
+					</button>
+					<a class="delete" href="delete/{{ Todo.id }}/">Delete</a>
+				</div>
+			</form>
+			{% endfor %}
+		</div>
+		<script>
+			function editTodo(e) {
+				var btn = e.currentTarget;
+				if (btn.innerHTML.trim() == "Edit") {
+					e.preventDefault();
+				} else {
+					return;
+				}
+				var id = btn.getAttribute("data-id");
+				var inputData = document.querySelector(
+					"input.data[data-id='" + id + "']"
+				);
+				inputData.removeAttribute("disabled");
+				btn.innerHTML = "Save";
+			}
+		</script>
+	</body>
+</html>
